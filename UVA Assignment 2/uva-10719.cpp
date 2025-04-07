@@ -1,56 +1,48 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int main() {
-    int k;
-    string line;
-    while (cin >> k) {
-        cin.ignore(); // skip newline
-        getline(cin, line);
+const int MAXN = 10005;
 
-        vector<int> a;
-        int i = 0, n = line.size();
-        while (i < n) {
-            while (i < n && line[i] == ' ') i++;
+int P[MAXN], q[MAXN];
+char input[MAXN * 10];
+int k, n;
 
-            int sign = 1;
-            if (i < n && line[i] == '-') {
-                sign = -1;
-                i++;
-            }
-
-            int num = 0;
-            bool found = false;
-            while (i < n && isdigit(line[i])) {
-                num = num * 10 + (line[i] - '0');
-                i++;
-                found = true;
-            }
-
-            if (found) a.push_back(sign * num);
-        }
-
-        int sz = a.size();
-        if (sz == 0) continue;
-
-        vector<int> q;
-        q.push_back(a[0]);
-
-        for (int i = 1; i < sz - 1; i++) {
-            q.push_back(a[i] + k * q.back());
-        }
-
-        // output q(x):
-        cout << "q(x):";
-        for (int i = 0; i < q.size(); i++) {
-            cout << (i == 0 ? " " : " ") << q[i];
-        }
-        cout << "\n";
-
-        // output r
-        int r = (sz == 1) ? a[0] : a[sz - 1] + k * q.back();
-        cout << "r = " << r << "\n";
+void parseCoefficients() {
+    n = 0;
+    char* token = strtok(input, " ");
+    while (token != NULL) {
+        P[n++] = atoi(token);
+        token = strtok(NULL, " ");
     }
+}
 
+int main() {
+    while (fgets(input, sizeof(input), stdin)) {
+        k = atoi(input);
+
+        if (!fgets(input, sizeof(input), stdin))
+            break;
+
+        parseCoefficients();
+
+        if (n <= 2) {
+            int r = P[0] * (-k);
+            r = P[1] - r;
+            printf("%d\n", P[0]);
+            printf("r = %d\n\n", r);
+        } else {
+            q[0] = P[0];
+            for (int i = 1; i + 1 < n; i++) {
+                q[i] = P[i] - q[i - 1] * (-k);
+            }
+            int r = P[n - 1] - q[n - 2] * (-k);
+
+            printf("q(x):");
+            for (int i = 0; i < n - 1; i++)
+                printf(" %d", q[i]);
+            printf("\n");
+            printf("r = %d\n\n", r);
+        }
+    }
     return 0;
 }
