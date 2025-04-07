@@ -1,66 +1,77 @@
-#include <bits/stdc++.h>
-using namespace std;
-
-double a[25]; 
-double root[25];
-int root_cnt;
-
-int n;
-double l, r;
-
-
-double f(double x) {
-    double res = 0, p = 1;
-    for (int i = n; i >= 0; i--) {
-        res += a[i] * p;
-        p *= x;
-    }
-    return res;
-}
-
-double bisection(double x1, double x2) {
-    double mid;
-    for (int i = 0; i < 100; i++) {
-        mid = (x1 + x2) / 2;
-        double f1 = f(x1);
-        double fmid = f(mid);
-        if (fabs(fmid) < 1e-7) break;
-        if (f1 * fmid < 0) x2 = mid;
-        else x1 = mid;
-    }
-    return mid;
-}
-
-int main() {
-    while (cin >> n) {
-        for (int i = n; i >= 0; i--) {
-            cin >> a[i];
-        }
-        cin >> l >> r;
-
-        double step = (r - l) / 10000.0;
-        double x1 = l;
-        root_cnt = 0;
-
-        while (x1 < r) {
-            double x2 = x1 + step;
-            double y1 = f(x1), y2 = f(x2);
-
-            if (y1 * y2 <= 0) {
-                double rt = bisection(x1, x2);
-
-                
-                if (root_cnt == 0 || fabs(rt - root[root_cnt - 1]) > 1e-4) {
-                    root[root_cnt++] = rt;
-                }
-            }
-            x1 = x2;
-        }
-
-        for (int i = 0; i < root_cnt; i++) {
-            printf(" %.4f", root[i]);
-        }
-        printf("\n");
-    }
-    return 0;
+#include <bits/stdc++.h> 
+using namespace std; 
+#define EPS 1e-7 
+vector<double> QuotientPolynomial(int degree, double root, vector<double>p_X) 
+{ 
+vector<double>q_X(degree + 1, 0.0); 
+for (int i = degree - 1; i >= 0; i--) { 
+q_X[i] = p_X[i + 1] + root * q_X[i + 1]; 
+} 
+return q_X; 
+} 
+double fX(int degree, double x, vector<double>p_X) 
+{ 
+double ans = 0.0; 
+for (int i = degree; i >= 0; i--) { 
+ans += p_X[i] * pow(x, i); 
+} 
+return ans; 
+} 
+double dX(int degree, double x, vector<double>p_X) 
+{ 
+double ans = 0.0; 
+for (int i = degree; i >= 1; i--) { 
+ans += p_X[i] * i * pow(x, i - 1); 
+} 
+return ans; 
+} 
+double NewtonRaphson(int degree, vector<double>p_X) 
+{ 
+double x, x0; 
+x0 = -25.0; 
+while (true) { 
+x = x0 - fX(degree, x0, p_X) / dX(degree, x0, p_X); 
+if (fabs(x - x0) < EPS) { 
+break; 
+        } 
+        x0 = x; 
+    } 
+    return x; 
+} 
+ 
+int main() 
+{ 
+ 
+ 
+    int n, i, test = 1; 
+    double x; 
+    vector<double>allP, allRoot; 
+ 
+    while (cin >> n) { 
+        if (!n) { 
+            break; 
+        } 
+ 
+        allP.clear(); 
+        allP.assign(n + 1, 0.0); 
+        for (i = n; i >= 0; i--) { 
+            cin >> allP[i]; 
+        } 
+ 
+        allRoot.clear(); 
+        for (i = n; i >= 1; i--) { 
+            x = NewtonRaphson(i, allP); 
+            allRoot.push_back(x); 
+            allP = QuotientPolynomial(i, x, allP); 
+        } 
+ 
+        sort(allRoot.begin(), allRoot.end()); 
+        cout << "Equation " << test++ << ":"; 
+        for (i = 0; i < n; i++) { 
+            cout << " " << setprecision(4) << fixed << allRoot[i]; 
+        } 
+        cout << "\n"; 
+    } 
+ 
+    return 0; 
 }
