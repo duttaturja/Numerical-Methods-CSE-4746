@@ -1,16 +1,27 @@
-#include <bits/stdc++.h>
-using namespace std;
-
-
-int main() {
-    double num, ans;
-    int x;
-    cout << "Enter number: ";
-    cin >> num;
-    cout << "Enter significant figures: ";
-    cin >> x;
-    double factor = pow(10, x - 1);
-    ans = round(num * factor) / factor;
-    cout << "Rounded number: " << ans << endl;
-    return 0;
+#include<bits\stdc++.h> 
+using namespace std; 
+int main() 
+{ 
+    string num; 
+    cout << "Input numbers : " << endl; 
+    cin >> num; 
+    int significantDigits = 0; 
+    int zero = 0; 
+    for(int i = 0; i < num.size(); i++) 
+    { 
+        if (num[i] >= '1' && num[i] <= '9') 
+        { 
+            zero = 1; 
+            significantDigits++; 
+        } 
+        else if (num[i] == '0' && zero) 
+        { 
+            significantDigits++; 
+        } 
+        else if (num[i] == '.') 
+        { 
+            continue; 
+        } 
+    } 
+    cout << "Number of significant digits : " <<  significantDigits << endl; 
 }
